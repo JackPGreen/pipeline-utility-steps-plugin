@@ -50,12 +50,20 @@ public class JackTest {
     public void listSomeWithExclusions() throws Exception {
         String flow = 
                 "node('slaves') {\n" +
-                        "  dir('/Users/jgreen/git/hazelcast-mono') {\n" +
+                        "  dir('/Users/jgreen/git/hazelcast-mono/hazelcast/hazelcast-tpc-engine') {\n" +
                         "    def files = findFiles(glob: '**/*')\n" +
                         "    echo \"${files.length} files\"\n" +
                         "    for(int i = 0; i < files.length; i++) {\n" +
-                        "      echo \"F: ${files[i].path.replace('\\\\', '/')}\"\n" +
+                        "        if (files[i].isDirectory()) {\n" + 
+                        "          continue\n" + 
+                        "        }\n" + 
+                        "        def text2 = readFile file: files[i].path\n" + 
+                        "        def text3 = text2.replaceFirst(\"(?<=https?://(www\\\\.)?hazelcast\\\\.com/.{1,999}/hazelcast-.{1,999}-)\\\\Q5.5\\\\E(?=\\\\.xsd)\\n\", \"5.6\")\n" + 
+                        //"        writeFile file: files[i].path, text: text3, encoding: \"UTF-8\"\n" + 
                         "    }\n" +
+                        //"    for(int i = 0; i < files.length; i++) {\n" +
+                        //"      echo \"F: ${files[i].path.replace('\\\\', '/')}\"\n" +
+                        //"    }\n" +
                         "  }\n" +
                         "}";
         p.setDefinition(new CpsFlowDefinition(flow, true));
